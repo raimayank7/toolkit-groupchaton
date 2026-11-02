@@ -74,6 +74,7 @@
     list.forEach(function (p) {
       if (p.india && !india) return;
       if (p.own && !p.family) return;          // other sites' own Ko-fi wording: Toolkit has its own
+      if (p.family === 'toolkit') return;        // never our own card here
       pool.push(p);
     });
     for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
