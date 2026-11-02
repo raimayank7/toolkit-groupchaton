@@ -70,7 +70,7 @@ def sheet(wb, title, widths, first=False, tab=None):
     ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_margins.left = ws.page_margins.right = 0.4
-    ws.oddFooter.center.text = CREDIT + '  ·  Toolkit by GroupChatOn  ·  toolkit.groupchaton.com'   # owner: credit on every printed page
+    ws.oddFooter.center.text = 'Toolkit by GroupChatOn  ·  toolkit.groupchaton.com'   # owner: the credit is never printed (How to use sheet + file properties only)
     ws.oddFooter.center.size = 8
     return ws
 
@@ -78,11 +78,8 @@ def title(ws, text, sub=None, span=8):
     ws['A1'] = text
     ws['A1'].font = Font(size=16, bold=True, color=BLUE)
     if sub:
-        # owner: the credit is on every sheet, but quiet: small light-grey text after the subtitle, never in the way
-        from openpyxl.cell.rich_text import CellRichText, TextBlock
-        from openpyxl.cell.text import InlineFont
-        ws['A2'] = CellRichText(TextBlock(InlineFont(sz=10, i=True, color=MUTED), sub),
-                                TextBlock(InlineFont(sz=8, color='A0AABB'), '      ' + CREDIT))
+        ws['A2'] = sub
+        ws['A2'].font = Font(size=10, italic=True, color=MUTED)
     ws.row_dimensions[1].height = 26
 
 def head(ws, row, labels, col=1):
@@ -944,7 +941,7 @@ def doc_new(tid):
     cp.keywords, cp.subject = 'Toolkit by GroupChatOn', t['desc']
     cp.created = cp.modified = datetime.datetime.now(); cp.revision = 1
     fp = s.footer.paragraphs[0]; fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = fp.add_run(CREDIT + '  ·  Template: Toolkit by GroupChatOn · toolkit.groupchaton.com'); r.font.size = Pt(7.5); r.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8)
+    r = fp.add_run('Template: Toolkit by GroupChatOn · toolkit.groupchaton.com'); r.font.size = Pt(7); r.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8)   # credit: file properties only, never printed
     return d
 
 def shade(cell_, color):

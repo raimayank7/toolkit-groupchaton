@@ -205,5 +205,6 @@ html[data-theme=dark] .tk-form legend{color:var(--brand)}
  .pg-tool main>*:not(.item),.pg-tool .item>*:not(.tk-tool),.pg-tool .tk-form,.pg-tool .tk-out-acts,.pg-tool .tk-msg{display:none!important}
  .pg-tool .tk-app{display:block}.pg-tool .tk-out{position:static}
  .pg-tool .tk-doc{border:0;box-shadow:none;padding:0}
+ .foot-credit,.no-print{display:none!important}   /* owner: the credit is never printed */
  @page{size:A4;margin:12mm}
 }
