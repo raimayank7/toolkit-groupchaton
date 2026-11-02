@@ -2,6 +2,7 @@
 # and saves the workbooks so the calculated values are stored in them. Run after make_files.py:
 #   powershell -ExecutionPolicy Bypass -File scripts\check_office.ps1 [-Files a.xlsx,b.docx]   (-Files = only those files)
 param([string[]]$Files)
+$Files = @($Files | ForEach-Object { $_ -split "," } | ForEach-Object { $_.Trim() } | Where-Object { $_ })   # "-Files a.xlsx,b.docx" through -File arrives as one string
 $ErrorActionPreference = 'Stop'
 $dir = Join-Path (Split-Path $PSScriptRoot -Parent) 'files'
 $bad = 0
@@ -38,5 +39,5 @@ try {
     $d.Close($false)
   }
 } finally { $wd.Quit(); [void][Runtime.InteropServices.Marshal]::ReleaseComObject($wd) }
-python -X utf8 (Join-Path $PSScriptRoot 'fix_meta.py') @($Files | Where-Object { $_ -like '*.xlsx' })
+python -X utf8 (Join-Path $PSScriptRoot 'fix_meta.py') @($Files)
 if ($bad) { Write-Output "$bad error cells"; exit 1 } else { Write-Output 'all files open and calculate without errors' }

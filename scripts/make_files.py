@@ -70,7 +70,7 @@ def sheet(wb, title, widths, first=False, tab=None):
     ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_margins.left = ws.page_margins.right = 0.4
-    ws.oddFooter.center.text = 'Toolkit by GroupChatOn  ·  toolkit.groupchaton.com'
+    ws.oddFooter.center.text = CREDIT + '  ·  Toolkit by GroupChatOn  ·  toolkit.groupchaton.com'   # owner: credit on every printed page
     ws.oddFooter.center.size = 8
     return ws
 
@@ -78,7 +78,7 @@ def title(ws, text, sub=None, span=8):
     ws['A1'] = text
     ws['A1'].font = Font(size=16, bold=True, color=BLUE)
     if sub:
-        ws['A2'] = sub
+        ws['A2'] = sub + '   ·   ' + CREDIT   # owner: the credit is visible on every sheet, not only in the file properties
         ws['A2'].font = Font(size=10, italic=True, color=MUTED)
     ws.row_dimensions[1].height = 26
 
@@ -941,7 +941,7 @@ def doc_new(tid):
     cp.keywords, cp.subject = 'Toolkit by GroupChatOn', t['desc']
     cp.created = cp.modified = datetime.datetime.now(); cp.revision = 1
     fp = s.footer.paragraphs[0]; fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = fp.add_run('Template: Toolkit by GroupChatOn · toolkit.groupchaton.com · ' + CREDIT); r.font.size = Pt(7); r.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8)
+    r = fp.add_run(CREDIT + '  ·  Template: Toolkit by GroupChatOn · toolkit.groupchaton.com'); r.font.size = Pt(8); r.font.color.rgb = RGBColor(0x64, 0x74, 0x8B)
     return d
 
 def shade(cell_, color):
@@ -1108,7 +1108,7 @@ if __name__ == '__main__':
     # python -X utf8 scripts/make_files.py [--only <kit-id>]   (--only makes just that toolkit's files, so other files stay untouched)
     os.makedirs(OUT, exist_ok=True)
     only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
-    if not only:
+    if not only or only == 'core':   # --only core = the 16 built-in files
         for f in (gst_invoice, gst_summary, client_dues, bank_reco, stock_register, cash_book, attendance, marks, fee_register,
                   salary, leave_tracker, task_tracker, expense_claim, quotation, letters, minutes):
             f()

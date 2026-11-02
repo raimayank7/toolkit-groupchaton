@@ -11,7 +11,7 @@
     'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand',
     'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
     'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Other Territory'];
-  var CREDIT = 'Made with Toolkit by GroupChatOn · toolkit.groupchaton.com';
+  var CREDIT = 'Designed & Developed by: Nivesh Sahayak · Made with Toolkit by GroupChatOn (toolkit.groupchaton.com)';   /* owner: on every document */
 
   /* ---------------- helpers */
   function h(tag, a, kids) {
@@ -226,7 +226,7 @@
   /* .xlsx */
   function toXlsx(m) {
     return loadLib('xlsx').then(function (ExcelJS) {
-      var wb = new ExcelJS.Workbook(); wb.creator = 'Toolkit by GroupChatOn'; wb.company = 'Designed & Developed by: Nivesh Sahayak';
+      var wb = new ExcelJS.Workbook(); wb.creator = 'Nivesh Sahayak'; wb.lastModifiedBy = 'Nivesh Sahayak'; wb.company = 'Nivesh Sahayak'; wb.description = CREDIT + ' · https://www.niveshsahayak.in/'; wb.keywords = 'Toolkit by GroupChatOn; Nivesh Sahayak; https://www.niveshsahayak.in/';
       var n = m.cols.length, ws = wb.addWorksheet('Document', { pageSetup: { paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 } } });
       ws.headerFooter.oddFooter = '&C&8' + CREDIT;
       var INR = '[>=10000000]₹ ##\\,##\\,##\\,##0.00;[>=100000]₹ ##\\,##\\,##0.00;₹ ##,##0.00';
@@ -291,7 +291,7 @@
       m.notes.forEach(function (t) { kids.push(p(t, { size: 17, color: '55607A' })); });
       kids.push(p('', { after: 600 }));
       kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ children: m.sign.map(function (s) { return cell(s ? '____________________\n' + s.split('\n').pop() : '', { nob: true }); }) })] }));
-      var d = new D.Document({ creator: 'Toolkit by GroupChatOn', description: 'Designed & Developed by: Nivesh Sahayak', title: m.title,
+      var d = new D.Document({ creator: 'Nivesh Sahayak', lastModifiedBy: 'Nivesh Sahayak', keywords: 'Toolkit by GroupChatOn; Nivesh Sahayak; https://www.niveshsahayak.in/', description: CREDIT + ' · https://www.niveshsahayak.in/', title: m.title,
         sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 900, bottom: 900, left: 1000, right: 1000 } } },
           footers: { default: new D.Footer({ children: [p(CREDIT, { size: 14, color: '94A3B8', al: AL.CENTER })] }) }, children: kids }] });
       return D.Packer.toBlob(d).then(function (blob) { save(blob, m.file + '.docx'); });
@@ -369,7 +369,7 @@
   }
   /* tools in their own files (assets/tools/<id>.js, loaded after this one) call TKTools.register(id, definition) with the same
      shape as TOOLS above; lib gives them the helpers. Mounting waits for DOMContentLoaded, which comes after every deferred script. */
-  window.TKTools = { words: words, tools: TOOLS, register: function (id, def) { TOOLS[id] = def; },
+  window.TKTools = { words: words, tools: TOOLS, CREDIT: CREDIT, register: function (id, def) { TOOLS[id] = def; },
     lib: { h: h, num: num, r2: r2, money: money, today: today, dmy: dmy, monthName: monthName, words: words, nextNo: nextNo, gradeOf: gradeOf, store: store, STATES: STATES, GST: GST } };
   function mountAll() { Array.prototype.forEach.call(doc.querySelectorAll('.tk-tool[data-tool]'), mount); }
   if (doc.readyState === 'complete') mountAll(); else doc.addEventListener('DOMContentLoaded', mountAll);
