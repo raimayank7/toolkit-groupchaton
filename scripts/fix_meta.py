@@ -1,8 +1,8 @@
 """Excel writes the PC's Office user name into "last modified by" when check_office.ps1 saves a workbook.
    This puts the credit name back (called at the end of check_office.ps1)."""
-import os, re, zipfile, shutil, tempfile
+import os, re, sys, zipfile, shutil, tempfile
 DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'files')
-for fn in sorted(os.listdir(DIR)):
+for fn in sorted(sys.argv[1:] or os.listdir(DIR)):   # file names given = only those
     if not fn.endswith('.xlsx'): continue
     p = os.path.join(DIR, fn)
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx').name

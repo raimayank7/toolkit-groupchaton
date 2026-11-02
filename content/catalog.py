@@ -384,6 +384,12 @@ item(id='expense-claim-maker', kit='general-office', kind='online', tool='expens
      tips=['Save as PDF and email it with photos of the bills.', 'Use the Excel version for claims you edit over several days.'],
      faqs=[('Is it saved online?', 'No, everything stays in your browser.')])
 
+# more toolkits, one file each: content/kits/<kit-id>.py defines KITS (list like TOOLKITS) and ITEMS (dicts like item(...))
+import os as _os, glob as _glob, importlib.util as _iu
+for _f in sorted(_glob.glob(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'kits', '*.py'))):
+    _s = _iu.spec_from_file_location('kit_' + _os.path.basename(_f)[:-3].replace('-', '_'), _f); _m = _iu.module_from_spec(_s); _s.loader.exec_module(_m)
+    TOOLKITS += _m.KITS; T += _m.ITEMS
+
 KIT = {k['id']: k for k in TOOLKITS}
 for t in T: assert t['kit'] in KIT, t['id']
 assert len({t['id'] for t in T}) == len(T)

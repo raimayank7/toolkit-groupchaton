@@ -367,6 +367,10 @@
     preview.appendChild(renderDoc(T.make(prof, data, groups)));
     doc.body.classList.add('pg-tool');
   }
-  Array.prototype.forEach.call(doc.querySelectorAll('.tk-tool[data-tool]'), mount);
-  window.TKTools = { words: words, tools: TOOLS };   /* for tests */
+  /* tools in their own files (assets/tools/<id>.js, loaded after this one) call TKTools.register(id, definition) with the same
+     shape as TOOLS above; lib gives them the helpers. Mounting waits for DOMContentLoaded, which comes after every deferred script. */
+  window.TKTools = { words: words, tools: TOOLS, register: function (id, def) { TOOLS[id] = def; },
+    lib: { h: h, num: num, r2: r2, money: money, today: today, dmy: dmy, monthName: monthName, words: words, nextNo: nextNo, gradeOf: gradeOf, store: store, STATES: STATES, GST: GST } };
+  function mountAll() { Array.prototype.forEach.call(doc.querySelectorAll('.tk-tool[data-tool]'), mount); }
+  if (doc.readyState === 'complete') mountAll(); else doc.addEventListener('DOMContentLoaded', mountAll);
 })();

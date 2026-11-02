@@ -1095,12 +1095,28 @@ def minutes():
     para(d, 'Minutes approved by: ____________________     Date: ____________')
     dsave(d, 'Meeting-Minutes-Template.docx')
 
+def plugins():
+    """more makers, one file per toolkit: scripts/makers/<kit-id>.py does `from make_files import *` and defines MAKERS = [functions]"""
+    import glob, importlib.util
+    out = []
+    for f in sorted(glob.glob(os.path.join(HERE, 'scripts', 'makers', '*.py'))):
+        s = importlib.util.spec_from_file_location('maker_' + os.path.basename(f)[:-3].replace('-', '_'), f); m = importlib.util.module_from_spec(s); s.loader.exec_module(m)
+        out.append((os.path.basename(f)[:-3], m.MAKERS))
+    return out
+
 if __name__ == '__main__':
+    # python -X utf8 scripts/make_files.py [--only <kit-id>]   (--only makes just that toolkit's files, so other files stay untouched)
     os.makedirs(OUT, exist_ok=True)
-    for f in (gst_invoice, gst_summary, client_dues, bank_reco, stock_register, cash_book, attendance, marks, fee_register,
-              salary, leave_tracker, task_tracker, expense_claim, quotation, letters, minutes):
-        f()
+    only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
+    if not only:
+        for f in (gst_invoice, gst_summary, client_dues, bank_reco, stock_register, cash_book, attendance, marks, fee_register,
+                  salary, leave_tracker, task_tracker, expense_claim, quotation, letters, minutes):
+            f()
+    for name, makers in plugins():
+        if only and name != only: continue
+        for f in makers: f()
     # every file named in the catalog exists
     for t in T:
+        if only and t['kit'] != only: continue
         for fn, _ in t.get('files', []): assert os.path.exists(os.path.join(OUT, fn)), fn
-    print('all files made')
+    print('files made' + (' for ' + only if only else ''))

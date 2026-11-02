@@ -10,7 +10,7 @@ from catalog import TOOLKITS, T, KIT
 from openpyxl import load_workbook
 from docx import Document
 
-OUT = os.path.join(HERE, '_site')
+OUT = os.environ.get('TK_OUT') or os.path.join(HERE, '_site')   # TK_OUT = another folder for a private preview
 SITE = 'https://toolkit.groupchaton.com'
 NAME = 'Toolkit by GroupChatOn'
 TAG = 'Office templates and add-ins for Excel and Word'
@@ -64,6 +64,8 @@ def page(path, title, desc, main, *, ld=None, ads=True, noindex=False, crumbs=No
             for i, (n, u) in enumerate(crumbs)) + '</nav>'
     adsense = ("<script async src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s' crossorigin='anonymous'></script>" % AD_CLIENT) if ads else ''
     tool_js = "<script defer src='/assets/tools.js?v=%s'></script>" % ver('assets/tools.js') if tool else ''
+    if tool and os.path.exists(os.path.join(HERE, 'assets', 'tools', tool + '.js')):   # a tool in its own file registers itself with TKTools
+        tool_js += "<script defer src='/assets/tools/%s.js?v=%s'></script>" % (tool, ver('assets/tools/%s.js' % tool))
     return f"""<!doctype html>
 <html lang='en-IN' data-theme='light'>
 <head>
@@ -296,7 +298,7 @@ def item_page(t):
                        'encodingFormat': 'application/vnd.openxmlformats-officedocument.' + ('spreadsheetml.sheet' if fn.endswith('xlsx') else 'wordprocessingml.document'),
                        'inLanguage': 'en-IN', 'publisher': {'@id': SITE + '/#org'}, 'license': SITE + '/p/terms-of-use.html'})
     wr(url(t)[1:] + 'index.html', page(url(t), t['title'], t['desc'], body, ld=ld, crumbs=[(k['name'], '/%s/' % k['id']), (t['name'], url(t))],
-                                         tool=t['kind'] == 'online', body_cls='pg-item' + (' pg-tool' if t['kind'] == 'online' else '')))
+                                         tool=t.get('tool') if t['kind'] == 'online' else None, body_cls='pg-item' + (' pg-tool' if t['kind'] == 'online' else '')))
 
 def kit_page(k):
     items = [t for t in T if t['kit'] == k['id']]
@@ -479,6 +481,7 @@ def site_files(paths):
     sw = open(os.path.join(HERE, 'assets', 'sw.js'), encoding='utf-8').read().replace('__VERSION__', stamp).replace('__PRECACHE__', json.dumps(
         ['/', '/offline.html', '/assets/toolkit.css?v=' + ver('assets/toolkit.css'), '/assets/toolkit.js?v=' + ver('assets/toolkit.js'),
          '/assets/tools.js?v=' + ver('assets/tools.js'), '/brand/logo-light.png', '/brand/logo-dark.png', '/brand/mark.svg', '/data/index.json'] +
+        ['/assets/tools/%s.js?v=%s' % (t['tool'], ver('assets/tools/%s.js' % t['tool'])) for t in T if t['kind'] == 'online' and os.path.exists(os.path.join(HERE, 'assets', 'tools', t['tool'] + '.js'))] +
         [url(t) for t in T if t['kind'] == 'online']))
     wr('sw.js', sw)
     wr('offline.html', page('/offline.html', 'Offline | Toolkit by GroupChatOn', 'You are offline.', "<h1>You're offline</h1><p class='lead'>This page hasn't been saved on this device yet. The online tools you opened before work offline; downloaded files are already on your computer.</p><p><a class='btn' href='/'>Go to the home page</a></p>", noindex=True, ads=False))
@@ -489,6 +492,7 @@ def main():
     shutil.copytree(os.path.join(HERE, 'files'), os.path.join(OUT, 'files'))
     os.makedirs(os.path.join(OUT, 'assets'), exist_ok=True)
     for f in ('toolkit.css', 'toolkit.js', 'tools.js'): shutil.copy(os.path.join(HERE, 'assets', f), os.path.join(OUT, 'assets', f))
+    if os.path.isdir(os.path.join(HERE, 'assets', 'tools')): shutil.copytree(os.path.join(HERE, 'assets', 'tools'), os.path.join(OUT, 'assets', 'tools'))
     home()
     for k in TOOLKITS: kit_page(k)
     for t in T: item_page(t)
