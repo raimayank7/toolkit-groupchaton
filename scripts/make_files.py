@@ -78,8 +78,11 @@ def title(ws, text, sub=None, span=8):
     ws['A1'] = text
     ws['A1'].font = Font(size=16, bold=True, color=BLUE)
     if sub:
-        ws['A2'] = sub + '   ·   ' + CREDIT   # owner: the credit is visible on every sheet, not only in the file properties
-        ws['A2'].font = Font(size=10, italic=True, color=MUTED)
+        # owner: the credit is on every sheet, but quiet: small light-grey text after the subtitle, never in the way
+        from openpyxl.cell.rich_text import CellRichText, TextBlock
+        from openpyxl.cell.text import InlineFont
+        ws['A2'] = CellRichText(TextBlock(InlineFont(sz=10, i=True, color=MUTED), sub),
+                                TextBlock(InlineFont(sz=8, color='A0AABB'), '      ' + CREDIT))
     ws.row_dimensions[1].height = 26
 
 def head(ws, row, labels, col=1):
@@ -941,7 +944,7 @@ def doc_new(tid):
     cp.keywords, cp.subject = 'Toolkit by GroupChatOn', t['desc']
     cp.created = cp.modified = datetime.datetime.now(); cp.revision = 1
     fp = s.footer.paragraphs[0]; fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = fp.add_run(CREDIT + '  ·  Template: Toolkit by GroupChatOn · toolkit.groupchaton.com'); r.font.size = Pt(8); r.font.color.rgb = RGBColor(0x64, 0x74, 0x8B)
+    r = fp.add_run(CREDIT + '  ·  Template: Toolkit by GroupChatOn · toolkit.groupchaton.com'); r.font.size = Pt(7.5); r.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8)
     return d
 
 def shade(cell_, color):
