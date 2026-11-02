@@ -141,6 +141,7 @@ PREVIEW = {'GST-Invoice-Template.xlsx': ('Invoice', 'A1:J29'), 'GST-Monthly-Summ
            'Student-Attendance-Register.xlsx': ('Register', 'A7:P13'), 'Marks-and-Report-Card.xlsx': ('Marks', 'A3:N11'),
            'Tuition-Fee-Register.xlsx': ('Fee Grid', 'A3:R6'), 'Salary-Sheet-and-Payslip.xlsx': ('Payslip', 'A1:E21'),
            'Employee-Leave-Tracker.xlsx': ('Balance', 'A3:I7'), 'Task-Tracker.xlsx': ('Tasks', 'A3:J9'), 'Expense-Claim-Form.xlsx': ('Claim', 'A1:F37')}
+for _t in T: PREVIEW.update(_t.get('preview') or _t.get('previews') or {})   # new toolkits name their preview sheet in content/kits/<id>.py
 
 def indian(n, dec):
     neg, n = n < 0, abs(n)
@@ -489,7 +490,7 @@ def site_files(paths):
 def main():
     if os.path.isdir(OUT): shutil.rmtree(OUT)
     shutil.copytree(os.path.join(HERE, 'static'), OUT)
-    shutil.copytree(os.path.join(HERE, 'files'), os.path.join(OUT, 'files'))
+    shutil.copytree(os.path.join(HERE, 'files'), os.path.join(OUT, 'files'), ignore=shutil.ignore_patterns('~$*'))   # not Excel/Word lock files
     os.makedirs(os.path.join(OUT, 'assets'), exist_ok=True)
     for f in ('toolkit.css', 'toolkit.js', 'tools.js'): shutil.copy(os.path.join(HERE, 'assets', f), os.path.join(OUT, 'assets', f))
     if os.path.isdir(os.path.join(HERE, 'assets', 'tools')): shutil.copytree(os.path.join(HERE, 'assets', 'tools'), os.path.join(OUT, 'assets', 'tools'))
