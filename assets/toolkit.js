@@ -128,17 +128,5 @@
   var q404 = $('[data-404-q]');
   if (q404) q404.value = decodeURIComponent(location.pathname).replace(/\.html?$/, '').split(/[\/\-_]+/).filter(Boolean).join(' ');
 
-  /* contact: copy the message, open the GroupChatOn contact form */
-  var cf = $('[data-contact]');
-  if (cf) cf.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var f = cf.elements, text = 'Toolkit (toolkit.groupchaton.com) — ' + f.topic.value + '\nName: ' + f.name.value + '\nEmail: ' + f.email.value + '\n\n' + f.message.value;
-    var note = $('[data-contact-note]');
-    function go() { note.textContent = 'Copied. Paste it into the contact form that just opened, then send.'; window.open('https://www.groupchaton.com/p/contact-us.html', '_blank', 'noopener'); }
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(go, function () { fallback(); });
-    else fallback();
-    function fallback() { var t = h('textarea', {}); t.value = text; body.appendChild(t); t.select(); try { doc.execCommand('copy'); } catch (er) {} t.remove(); go(); }
-  });
-
   body.classList.add('tk-ready');
 })();

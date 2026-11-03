@@ -387,15 +387,11 @@ def static_pages():
 <p>More templates for every toolkit, an Excel add-in with a Toolkit ribbon tab, and a side panel inside Excel and Word. Ideas are welcome on the <a href='/p/contact.html'>contact page</a>.</p>""")
     P['contact'] = ('Contact Toolkit by GroupChatOn', 'Ask for a template, report a mistake in a file or send feedback to Toolkit by GroupChatOn.', 'ContactPage', f"""
 <h1>Contact us</h1>
-<p class='lead'>Found a mistake in a formula, need a template for your work, or have feedback? Write it below.</p>
-<form class='contact' data-contact>
-<label for='c-name'>Your name</label><input id='c-name' name='name' autocomplete='name'>
-<label for='c-mail'>Your email (so we can reply)</label><input id='c-mail' name='email' type='email' autocomplete='email'>
-<label for='c-topic'>Topic</label><select id='c-topic' name='topic'><option>Request a template</option><option>Mistake in a file</option><option>Online tool problem</option><option>Feedback</option><option>Other</option></select>
-<label for='c-msg'>Message</label><textarea id='c-msg' name='message' rows='6' required></textarea>
-<button class='btn' type='submit'>Copy message and open the contact form</button>
-<p class='muted' data-contact-note>Your message is copied, then the GroupChatOn contact form opens in a new tab: paste it there (long-press or Ctrl + V) and send. We usually reply within a few days.</p>
-</form>""")
+<p class='lead'>Found a mistake in a formula, need a template for your work, or have feedback? Messages for every GroupChatOn site go through one contact form on our main site.</p>
+<p><a class='btn' href='https://www.groupchaton.com/p/contact-us.html'>Open the contact form</a></p>
+<h2>Help us answer faster</h2>
+<ul><li><b>Start with "Toolkit"</b> so we know which site it is about.</li><li><b>The file or tool name</b>, for example "GST Invoice Register".</li><li><b>What went wrong</b>, or what the template you need should do.</li><li><b>Your email</b>, so we can reply.</li></ul>
+<p>We usually reply within a few days.</p>""")
     P['privacy-policy'] = ('Privacy Policy | Toolkit by GroupChatOn', 'How Toolkit by GroupChatOn handles data: no accounts, online tools save only in your browser, files stay on your device; cookies and ads by Google.', 'WebPage', f"""
 <h1>Privacy policy</h1>
 <p class='muted'>Last updated: {upd}</p>
