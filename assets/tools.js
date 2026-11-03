@@ -12,7 +12,7 @@
     'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
     'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Other Territory'];
   var CREDIT = 'Designed & Developed by: Nivesh Sahayak';   /* owner: shown under the on-screen preview only, never printed or put in the files (file properties carry it) */
-  var MADE = 'Made with Toolkit by GroupChatOn · toolkit.groupchaton.com';
+  var MADE = 'toolkit.groupchaton.com';   /* owner: the only line printed or put in files, short and simple */
 
   /* ---------------- helpers */
   function h(tag, a, kids) {

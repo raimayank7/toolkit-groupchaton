@@ -70,7 +70,7 @@ def sheet(wb, title, widths, first=False, tab=None):
     ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_margins.left = ws.page_margins.right = 0.4
-    ws.oddFooter.center.text = 'Toolkit by GroupChatOn  ·  toolkit.groupchaton.com'   # owner: the credit is never printed (How to use sheet + file properties only)
+    ws.oddFooter.center.text = 'toolkit.groupchaton.com'   # owner: the credit is never printed (How to use sheet + file properties only)
     ws.oddFooter.center.size = 8
     return ws
 
@@ -941,7 +941,7 @@ def doc_new(tid):
     cp.keywords, cp.subject = 'Toolkit by GroupChatOn', t['desc']
     cp.created = cp.modified = datetime.datetime.now(); cp.revision = 1
     fp = s.footer.paragraphs[0]; fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = fp.add_run('Template: Toolkit by GroupChatOn · toolkit.groupchaton.com'); r.font.size = Pt(7); r.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8)   # credit: file properties only, never printed
+    r = fp.add_run('toolkit.groupchaton.com'); r.font.size = Pt(7); r.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8)   # credit: file properties only, never printed
     return d
 
 def shade(cell_, color):

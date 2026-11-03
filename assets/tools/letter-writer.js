@@ -12,7 +12,7 @@
   'use strict';
   var TK = window.TKTools; if (!TK) return;
   var L = TK.lib, h = L.h, store = L.store, doc = document;
-  var CREDIT = TK.CREDIT || 'Designed & Developed by: Nivesh Sahayak', MADE = TK.MADE || 'Made with Toolkit by GroupChatOn · toolkit.groupchaton.com';
+  var CREDIT = TK.CREDIT || 'Designed & Developed by: Nivesh Sahayak', MADE = TK.MADE || 'toolkit.groupchaton.com';
   var DATA = /*DATA*/{
 "C": [
  ["school", "School & college", "🎓", ["Govt. Senior Secondary School", "राजकीय वरिष्ठ माध्यमिक विद्यालय", "Model Town, Ludhiana", "मॉडल टाउन, लुधियाना"], 1],

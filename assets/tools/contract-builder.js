@@ -7,7 +7,7 @@
   'use strict';
   var doc = document, TOOL = 'contract-builder', KEY = 'tk-draft-' + TOOL;
   var DOCX = ['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js', 'docx'];
-  var CREDIT = 'Made with Toolkit by GroupChatOn · toolkit.groupchaton.com';   /* = TKTools.MADE: the only line printed or put in files */
+  var CREDIT = 'toolkit.groupchaton.com';   /* = TKTools.MADE: the only line printed or put in files */
   var NS = (window.TKTools && TKTools.CREDIT) || 'Designed & Developed by: Nivesh Sahayak';   /* owner: on screen only (class foot-credit), never printed or in files */
 
   /* ---------------- helpers */
