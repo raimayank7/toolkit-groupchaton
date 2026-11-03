@@ -7,6 +7,25 @@ from docx.enum.text import WD_COLOR_INDEX, WD_BREAK
 
 _JS = open(os.path.join(HERE, 'assets', 'tools', 'letter-writer.js'), encoding='utf-8').read()
 LD = ast.literal_eval(_JS[_JS.index('/*DATA*/') + 8:_JS.index('/*END*/')])
+_HJ = open(os.path.join(HERE, 'assets', 'tools', 'lw-lang', 'hi.js'), encoding='utf-8').read()
+_HI = ast.literal_eval(_HJ[_HJ.index('/*DATA*/') + 8:_HJ.index('/*END*/')])
+
+def _pairs():
+    """The tool keeps English in DATA and Hindi in lw-lang/hi.js; the makers below want [English, Hindi] pairs as before."""
+    for c in LD['C']: c[3] = [c[3][0], _HI['C'][c[0]][0], c[3][1], _HI['C'][c[0]][1]]
+    for k, f in LD['F'].items():
+        if f[1] == 's': LD['F'][k] = [f[0], f[1], f[2], f[2], [[o, _HI['O'][k][i]] for i, o in enumerate(f[3])]]
+        else: LD['F'][k] = [f[0], f[1], f[2], _HI['F'].get(k, f[2])]
+    for k, tn in LD['TONE'].items(): LD['TONE'][k] = {n: [v, _HI['TONE'][k][n]] for n, v in tn.items()}
+    for t in LD['T']:
+        h = _HI['T'][t['id']]; t['h'] = h['h']
+        for k in ('to', 'org', 's', 'sal', 'so'):
+            if k in t: t[k] = [t[k], h[k]]
+        t['b'] = [t['b'], h['b']]
+        if 'o' in t: t['o'] = [[o[0], o[1], o[2], h['o'][o[0]], o[3]] for o in t['o']]
+        for k in ('sm', 't'):
+            if k in t: t[k] = {n: [v, h[k][n]] for n, v in t[k].items()}
+_pairs()
 LF, LR, LT, LTONE = LD['F'], LD['R'], {t['id']: t for t in LD['T']}, LD['TONE']
 HIFONT = 'Nirmala UI'
 HI_LABEL = {'sname': 'आपका नाम', 'cls': 'कक्षा', 'roll': 'अनुक्रमांक', 'd1': 'आरंभ तिथि', 'd2': 'अंतिम तिथि', 'illness': 'बीमारी का नाम',
