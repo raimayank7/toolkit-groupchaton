@@ -121,7 +121,7 @@ def page(path, title, desc, main, *, ld=None, ads=True, noindex=False, crumbs=No
   <div class='wrap ftr-in'>
     <div class='ftr-brand'><img src='/brand/mark.svg' width='40' height='40' alt=''><div><b>{NAME}</b><br><span>{TAG}. Free, private, works offline.</span></div></div>
     {FOOT_KITS}
-    <nav class='ftr-nav' aria-label='Site'><b>Site</b><a href='/p/about.html'>About</a><a href='/p/contact.html'>Contact</a><a href='/p/privacy-policy.html'>Privacy policy</a><a href='/p/disclaimer.html'>Disclaimer</a><a href='/p/terms-of-use.html'>Terms of use</a><a href='/search/'>Search</a></nav>
+    <nav class='ftr-nav' aria-label='Site'><b>Site</b><a href='/p/about.html'>About</a><a href='/p/contact.html'>Contact</a><a href='/my-details/'>My saved details</a><a href='/p/privacy-policy.html'>Privacy policy</a><a href='/p/disclaimer.html'>Disclaimer</a><a href='/p/terms-of-use.html'>Terms of use</a><a href='/search/'>Search</a></nav>
     <nav class='ftr-nav' aria-label='GroupChatOn'><b>GroupChatOn</b><a href='https://infinity.groupchaton.com/'>Infinity free tools ↗</a><a href='https://www.groupchaton.com/'>Novels ↗</a><a href='https://share.groupchaton.com/'>Share ↗</a><a href='https://help.groupchaton.com/'>Help ↗</a></nav>
   </div>
   <div class='wrap ftr-base'>
@@ -463,6 +463,20 @@ def search_and_404():
 <input id='sq' name='q' type='search' placeholder='e.g. GST invoice, attendance, salary slip' autocomplete='off'><button class='btn' type='submit'>Search</button></form>
 <p class='muted' data-search-count></p><div class='grid' data-search-results></div>"""
     wr('search/index.html', page('/search/', 'Search | Toolkit by GroupChatOn', 'Search all Toolkit by GroupChatOn Excel and Word templates and online office tools.', body, noindex=True, ads=False, body_cls='pg-search'))
+    # /my-details/: the saved lists behind the suggestions in every online tool (owner: type details once, never again)
+    body_md = """<h1>My saved details</h1>
+<p class='lead'>Your own details, customers, suppliers and items are remembered on this device when you print or download from any Toolkit online tool. Next time they come up as suggestions while you type: pick one and its address, GSTIN, rate and other details fill in.</p>
+<div data-masters><p class='muted'>Loading your saved details…</p></div>
+<h2>Good to know</h2>
+<ul>
+<li><b>Private:</b> everything is kept in this browser only. Nothing is sent to us or to anyone else.</li>
+<li><b>Nothing fills in by itself:</b> saved details only appear as suggestions. You choose when to use one.</li>
+<li><b>Another phone or computer?</b> Tap <b>Download backup</b> here, then <b>Restore or import</b> on the other device.</li>
+<li><b>Have a customer or item list in Excel?</b> Download the <b>Excel file</b>, paste your rows into the "Customers and suppliers" or "Items and services" sheet, save, then use <b>Restore or import</b>.</li>
+<li><b>Clearing your browser data</b> also deletes these lists, so keep a backup.</li>
+</ul>"""
+    wr('my-details/index.html', page('/my-details/', 'My Saved Details | Toolkit by GroupChatOn', 'See, change, back up or move the business details, customers, suppliers and items that Toolkit online tools suggest while you type.',
+                                     body_md, noindex=True, ads=False, crumbs=[('My saved details', '/my-details/')], body_cls='pg-md', tool='masters'))
     body404 = """<h1>Page not found</h1><p class='lead'>That address doesn't exist (any more). Try a search or pick a toolkit.</p>
 <form class='hero-search' action='/search/' role='search'><label class='sr' for='nq'>Search</label><input id='nq' name='q' type='search' data-404-q placeholder='Search templates and tools'><button class='btn' type='submit'>Search</button></form>
 <div class='kgrid'>%s</div>""" % ''.join(kit_card(k) for k in TOOLKITS)

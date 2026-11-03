@@ -299,8 +299,84 @@
     });
   }
 
+  /* ---------------- masters: the visitor types their own details, customers and items ONCE; every tool on this site fills them in.
+     tk-mine    [{ name, org, person, addr, gstin, state, phone, email, pan, bank, acct, ifsc, upi, web, desig, dept, empcode, used }]   my own details
+     tk-parties [{ name, type, addr, gstin, state, phone, email, pan, … , used }]   customers, suppliers, tenants, patients…
+     tk-items   [{ name, code, hsn, unit, rate, gst, used }]                          goods and services, shared by every billing tool
+     tk-memo-<tool>-<list>  rows typed before in other line lists (subjects, earnings, expense heads…), by name
+     Owner: nothing is filled in by itself. Saved values are offered as SUGGESTIONS while typing; picking a saved
+     business, customer or item fills its other details. Everything stays in this browser; /my-details/ shows it with backup, restore and Excel. */
+  var SC = { '01': 'Jammu and Kashmir', '02': 'Himachal Pradesh', '03': 'Punjab', '04': 'Chandigarh', '05': 'Uttarakhand', '06': 'Haryana', '07': 'Delhi',
+    '08': 'Rajasthan', '09': 'Uttar Pradesh', '10': 'Bihar', '11': 'Sikkim', '12': 'Arunachal Pradesh', '13': 'Nagaland', '14': 'Manipur', '15': 'Mizoram',
+    '16': 'Tripura', '17': 'Meghalaya', '18': 'Assam', '19': 'West Bengal', '20': 'Jharkhand', '21': 'Odisha', '22': 'Chhattisgarh', '23': 'Madhya Pradesh',
+    '24': 'Gujarat', '25': 'Dadra and Nagar Haveli and Daman and Diu', '26': 'Dadra and Nagar Haveli and Daman and Diu', '27': 'Maharashtra', '28': 'Andhra Pradesh',
+    '29': 'Karnataka', '30': 'Goa', '31': 'Lakshadweep', '32': 'Kerala', '33': 'Tamil Nadu', '34': 'Puducherry', '35': 'Andaman and Nicobar Islands',
+    '36': 'Telangana', '37': 'Andhra Pradesh', '38': 'Ladakh', '97': 'Other Territory' };
+  function gstinCheck(g) {   // standard GSTIN check digit (base 36)
+    g = String(g || '').toUpperCase().trim();
+    if (!/^\d{2}[A-Z0-9]{10}[1-9A-Z]Z[0-9A-Z]$/.test(g)) return false;
+    var C = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', s = 0;
+    for (var i = 0; i < 14; i++) { var p = C.indexOf(g[i]) * (i % 2 ? 2 : 1); s += Math.floor(p / 36) + p % 36; }
+    return C[(36 - s % 36) % 36] === g[14];
+  }
+  function stateOf(g) { return gstinCheck(g) ? SC[String(g).slice(0, 2)] || '' : ''; }
+  var M = {
+    values: function (k, f) { var seen = {}, out = []; M.list(k).forEach(function (r) { var v = r[f]; if (v != null && String(v).trim() && !seen[String(v).toLowerCase()]) { seen[String(v).toLowerCase()] = 1; out.push(String(v)); } }); return out; },
+    list: function (k) { var a = store(k); return Array.isArray(a) ? a : []; },
+    find: function (k, name) { var key = String(name || '').trim().toLowerCase(); if (!key) return null; return M.list(k).filter(function (r) { return String(r.name).toLowerCase() === key; })[0] || null; },
+    upsert: function (k, row) {
+      var name = String(row.name || '').trim(); if (!name) return;
+      var a = M.list(k), key = name.toLowerCase(), i = -1;
+      a.forEach(function (r, j) { if (String(r.name).toLowerCase() === key) i = j; });
+      var n = i >= 0 ? a[i] : {};
+      Object.keys(row).forEach(function (f) { var v = row[f]; if (v != null && String(v).trim() !== '') n[f] = v; });
+      n.name = name; n.used = Date.now();
+      if (i < 0) a.push(n);
+      a.sort(function (x, y) { return (y.used || 0) - (x.used || 0); });
+      store(k, a.slice(0, 3000));
+    }
+  };
+  // which saved value a form field means, from its key and label (the tools were written separately, so labels differ)
+  function meKey(f) {
+    var l = String(f[1]).toLowerCase();
+    if (/gstin/.test(l)) return 'gstin'; if (/\bpan\b/.test(l)) return 'pan'; if (/ifsc/.test(l)) return 'ifsc';
+    if (/account (no|number)/.test(l)) return 'acct'; if (/\bbank\b/.test(l)) return 'bank'; if (/\bupi\b/.test(l)) return 'upi';
+    if (/phone|mobile/.test(l)) return 'phone'; if (/e-?mail/.test(l)) return 'email'; if (/website/.test(l)) return 'web';
+    if (/^state\b/.test(l)) return 'state'; if (/address/.test(l)) return 'addr';
+    if (/employee code/.test(l)) return 'empcode'; if (/designation/.test(l)) return 'desig'; if (/department/.test(l)) return 'dept';
+    if (/business|shop|company|firm|clinic|restaurant|school|centre|contractor/.test(l)) return 'org';
+    if (/^your name$|^prepared by|^name$/.test(l)) return 'person';
+    return null;
+  }
+  var PARTY = /^(customer|client|buyer|bill(ed)? to|supplier|vendor|tenant|patient|party|consignee|contact person)\b/i;
+  function partyKey(f) {
+    var l = String(f[1]); if (!PARTY.test(l)) return null; l = l.toLowerCase();
+    if (/reference|enquiry|order no|number|\bno\.|date|\bref\b/.test(l)) return null;   // per-document values, not the party's
+    if (/^contact person/.test(l)) return 'contact';
+    if (/gstin/.test(l)) return 'gstin'; if (/\bpan\b/.test(l)) return 'pan'; if (/state|place of supply/.test(l)) return 'state';
+    if (/address/.test(l)) return 'addr'; if (/phone|mobile/.test(l)) return 'phone'; if (/e-?mail/.test(l)) return 'email';
+    if (/name/.test(l) || /^(customer|client|buyer|supplier|vendor|tenant|patient|party)$/.test(l)) return 'name';
+    return 'x_' + f[0];
+  }
+  function partyType(T) { var f = T.fields.filter(function (x) { return PARTY.test(x[1]); })[0]; return f ? String(f[1]).split(' ')[0].replace(/^bill.*/i, 'Customer') : ''; }
+  // line lists: the column that names the line, and (for goods/services lists) which saved item value each column means
+  function nameCol(g) { var c = g.cols.filter(function (c) { return c[3] === 'wide'; })[0] || g.cols.filter(function (c) { return !c[3] || c[3] === 'text'; })[0]; return c ? c[0] : null; }
+  function itemKey(c) {
+    var k = c[0], l = String(c[1]).toLowerCase();
+    if (/hsn|sac/.test(l)) return 'hsn'; if (/item code|^code/.test(l)) return 'code'; if (k === 'unit' || /^unit/.test(l)) return 'unit';
+    if (/^rate|price/.test(l)) return 'rate'; if (k === 'gst' || /^(gst|tax) %/.test(l)) return 'gst';
+    return null;
+  }
+  function isGoods(g) { return g.cols.some(function (c) { return itemKey(c) === 'rate'; }); }
+  var lists = {};   // one <datalist> per saved list, refreshed when a field gets focus
+  function datalist(key, names) {
+    var dl = lists[key]; if (!dl) { dl = lists[key] = h('datalist', { id: 'tkdl-' + key.replace(/[^a-z0-9]/gi, '-') }); doc.body.appendChild(dl); }
+    dl.innerHTML = ''; names.slice(0, 400).forEach(function (n) { dl.appendChild(h('option', { value: n })); });
+    return dl.id;
+  }
+
   /* ---------------- the form */
-  function field(def, val, onChange) {
+  function field(def, val, onChange, pick) {
     var key = def[0], lab = def[1], type = def[3] || 'text', opts = def[4], wide = def[3] === 'wide';
     if (type === 'check') {
       var cb = h('input', { type: 'checkbox', checked: val ? true : null, onchange: function () { onChange(key, cb.checked); } });
@@ -308,10 +384,15 @@
     }
     var inp;
     if (type === 'select') {
-      inp = h('select', { onchange: function () { onChange(key, inp.value); } }, opts.map(function (o) { return h('option', { value: o, selected: String(o) === String(val) ? true : null, text: o }); }));
+      inp = h('select', { 'data-k': key, onchange: function () { onChange(key, inp.value); } }, opts.map(function (o) { return h('option', { value: o, selected: String(o) === String(val) ? true : null, text: o }); }));
     } else {
-      inp = h('input', { type: type === 'wide' ? 'text' : type, value: val == null ? '' : val, inputmode: type === 'number' ? 'decimal' : null, step: type === 'number' ? 'any' : null,
-        oninput: function () { onChange(key, inp.value); } });
+      inp = h('input', { 'data-k': key, type: type === 'wide' ? 'text' : type, value: val == null ? '' : val, inputmode: type === 'number' ? 'decimal' : null, step: type === 'number' ? 'any' : null,
+        autocomplete: pick ? 'off' : null,
+        oninput: function (e) { onChange(key, inp.value); if (pick && pick.onPick && (!e.inputType || e.inputType === 'insertReplacementText')) pick.onPick(inp.value, inp); } });
+      if (pick) {   // suggestions only: a <datalist> of saved values, refreshed on focus
+        inp.addEventListener('focus', function () { inp.setAttribute('list', datalist(pick.key, pick.list())); });
+        inp.setAttribute('list', datalist(pick.key, pick.list()));
+      }
     }
     return h('label', { 'class': 'tk-f' + (wide ? ' wide' : ''), style: wide ? 'grid-column:1/-1' : null }, [lab, inp]);
   }
@@ -337,16 +418,58 @@
     var timer;
     function persist() { store(PK, prof); store(DK, { data: data, groups: groups }); }
     function update() { clearTimeout(timer); timer = setTimeout(function () { persist(); preview.innerHTML = ''; preview.appendChild(renderDoc(T.make(prof, data, groups))); }, 120); }
+    /* ---- masters: suggestions while typing; picking a saved record fills its other fields; records are saved on Print / Excel / Word */
+    var myName = T.profile.filter(function (f) { return meKey(f) === 'org'; })[0] || T.profile.filter(function (f) { return meKey(f) === 'person'; })[0];
+    function setIn(box, k, v) { var el = box && box.querySelector('[data-k="' + k + '"]'); if (el) el.value = v; }
+    function textish(f) { return !f[3] || f[3] === 'wide' || f[3] === 'text'; }
+    function profPick(f) {
+      var mk = meKey(f); if (!mk || !textish(f)) return null;
+      return { key: 'mine-' + mk, list: function () { return M.values('tk-mine', mk); },
+        onPick: f === myName ? function (v, inp) { var r = M.find('tk-mine', v); if (!r) return; var box = inp.closest('fieldset');
+          T.profile.forEach(function (g) { var k = meKey(g); if (k && g !== f && r[k] != null) { prof[g[0]] = r[k]; setIn(box, g[0], r[k]); } }); update(); } : null };
+    }
+    function partyPick(f) {
+      var pk = partyKey(f); if (!pk || !textish(f)) return null;
+      return { key: 'party-' + pk, list: function () { return pk === 'name' ? M.list('tk-parties').map(function (r) { return r.name; }) : M.values('tk-parties', pk); },
+        onPick: pk === 'name' ? function (v, inp) { var r = M.find('tk-parties', v); if (!r) return; var box = inp.closest('fieldset');
+          T.fields.forEach(function (g) { var k = partyKey(g); if (k && k !== 'name' && r[k] != null) { data[g[0]] = r[k]; setIn(box, g[0], r[k]); } }); update(); } : null };
+    }
+    function linePick(g, c, line) {
+      var nc = nameCol(g), goods = isGoods(g), SK = goods ? 'tk-items' : 'tk-memo-' + id + '-' + g.key, ik = itemKey(c);
+      if (c[0] === nc) return { key: SK, list: function () { return M.list(SK).map(function (r) { return r.name; }); },
+        onPick: function (v, inp) { var r = M.find(SK, v); if (!r) return; var box = inp.closest('.tk-row');
+          g.cols.forEach(function (cc) { if (cc[0] === nc || cc[3] === 'check') return; var k = goods ? itemKey(cc) : cc[0]; if (k && r[k] != null && String(r[k]) !== '') { line[cc[0]] = r[k]; setIn(box, cc[0], r[k]); } }); update(); } };
+      if (goods && (ik === 'hsn' || ik === 'unit' || ik === 'code') && textish(c)) return { key: 'item-' + ik, list: function () { return M.values('tk-items', ik); } };
+      return null;
+    }
+    function remember() {   // on Print / Excel / Word: keep only what the visitor typed (never the sample text)
+      var mine = {}; T.profile.forEach(function (f) { var k = meKey(f), v = prof[f[0]]; if (k && v != null && String(v).trim() && v !== f[2]) mine[k] = v; });
+      mine.name = mine.org || mine.person; if (mine.name) M.upsert('tk-mine', mine);
+      var party = {}; T.fields.forEach(function (f) { var k = partyKey(f), v = data[f[0]]; if (k && v != null && String(v).trim() && v !== f[2]) party[k] = v; });
+      if (party.name) { party.type = partyType(T); M.upsert('tk-parties', party); }
+      T.groups.forEach(function (g) {
+        var nc = nameCol(g), goods = isGoods(g), SK = goods ? 'tk-items' : 'tk-memo-' + id + '-' + g.key; if (!nc) return;
+        var samples = (g.sample || []).map(function (r) { return String(r[nc] || '').toLowerCase(); });
+        (groups[g.key] || []).forEach(function (line) {
+          var n = String(line[nc] || '').trim(); if (!n || samples.indexOf(n.toLowerCase()) >= 0) return;
+          var row = { name: n };
+          g.cols.forEach(function (c) { if (c[0] === nc || c[3] === 'check') return; var k = goods ? itemKey(c) : c[0]; if (k && line[c[0]] != null && String(line[c[0]]).trim()) row[k] = line[c[0]]; });
+          M.upsert(SK, row);
+        });
+      });
+    }
     function build() {
       form.innerHTML = '';
-      form.appendChild(h('fieldset', {}, [h('legend', { text: 'Your details (saved on this device)' }), h('div', { 'class': 'tk-row' }, T.profile.map(function (f) { return field(f, prof[f[0]], function (k, v) { prof[k] = v; update(); }); }))]));
-      form.appendChild(h('fieldset', {}, [h('legend', { text: 'This ' + T.name }), h('div', { 'class': 'tk-row' }, T.fields.map(function (f) { return field(f, data[f[0]], function (k, v) { data[k] = v; update(); }); }))]));
+      form.appendChild(h('p', { 'class': 'tk-saved' }, ['\uD83D\uDCA1 What you print or download is remembered on this device and offered as suggestions next time. ',
+        h('a', { href: '/my-details/', text: 'My saved details' })]));
+      form.appendChild(h('fieldset', {}, [h('legend', { text: 'Your details (saved on this device)' }), h('div', { 'class': 'tk-row' }, T.profile.map(function (f) { return field(f, prof[f[0]], function (k, v) { prof[k] = v; update(); }, profPick(f)); }))]));
+      form.appendChild(h('fieldset', {}, [h('legend', { text: 'This ' + T.name }), h('div', { 'class': 'tk-row' }, T.fields.map(function (f) { return field(f, data[f[0]], function (k, v) { data[k] = v; update(); }, partyPick(f)); }))]));
       T.groups.forEach(function (g) {
         var list = h('div', { 'class': 'tk-lines' });
         groups[g.key].forEach(function (line, i) {
           list.appendChild(h('div', { 'class': 'tk-line' }, [
             h('button', { type: 'button', 'class': 'tk-x', 'aria-label': 'Remove line ' + (i + 1), title: 'Remove', text: '×', onclick: function () { groups[g.key].splice(i, 1); if (!groups[g.key].length) groups[g.key].push(defaults(g.cols)); build(); update(); } }),
-            h('div', { 'class': 'tk-row' }, g.cols.map(function (c) { return field(c, line[c[0]], function (k, v) { line[k] = v; update(); }); }))]));
+            h('div', { 'class': 'tk-row' }, g.cols.map(function (c) { return field(c, line[c[0]], function (k, v) { line[k] = v; update(); }, linePick(g, c, line)); }))]));
         });
         form.appendChild(h('fieldset', {}, [h('legend', { text: g.title }), list,
           h('div', { 'class': 'tk-acts' }, [h('button', { type: 'button', 'class': 'btn btn-2', text: '+ ' + g.add, onclick: function () { groups[g.key].push(defaults(g.cols)); build(); update(); var f = form.querySelectorAll('.tk-lines')[T.groups.indexOf(g)]; var ins = f && f.lastChild.querySelector('input,select'); if (ins) ins.focus(); } })])]));
@@ -355,11 +478,11 @@
         h('button', { type: 'button', 'class': 'btn btn-2', text: 'New ' + T.name + ' (keep my details)', onclick: function () { fresh(false); build(); update(); msg.textContent = 'Cleared. Your details are kept.'; } }),
         h('button', { type: 'button', 'class': 'btn btn-2', text: 'Fill sample', onclick: function () { fresh(true); build(); update(); } })]));
     }
-    function done(kind) { if (T.no === 'no' && data.no) store(NK, data.no); msg.textContent = kind + ' ready. Check your downloads folder.'; }
+    function done(kind) { if (T.no === 'no' && data.no) store(NK, data.no); remember(); msg.textContent = kind + ' ready. Check your downloads folder.'; }
     function fail(e) { msg.textContent = (e && e.message) || 'Something went wrong. Please try again.'; }
     var icon = function (d) { return h('span', { 'aria-hidden': 'true', text: d }); };
     out.appendChild(h('div', { 'class': 'tk-out-acts' }, [
-      h('button', { type: 'button', 'class': 'btn', onclick: function () { persist(); if (T.no === 'no' && data.no) store(NK, data.no); window.print(); } }, [icon('🖨'), ' Print / PDF']),
+      h('button', { type: 'button', 'class': 'btn', onclick: function () { persist(); if (T.no === 'no' && data.no) store(NK, data.no); remember(); window.print(); } }, [icon('🖨'), ' Print / PDF']),
       h('button', { type: 'button', 'class': 'btn btn-2', onclick: function (e) { var b = e.currentTarget; b.disabled = true; msg.textContent = 'Making the Excel file…'; toXlsx(T.make(prof, data, groups)).then(function () { done('Excel file'); }, fail).then(function () { b.disabled = false; }); } }, [icon('📗'), ' Excel']),
       h('button', { type: 'button', 'class': 'btn btn-2', onclick: function (e) { var b = e.currentTarget; b.disabled = true; msg.textContent = 'Making the Word file…'; toDocx(T.make(prof, data, groups)).then(function () { done('Word file'); }, fail).then(function () { b.disabled = false; }); } }, [icon('📘'), ' Word'])]));
     out.appendChild(msg); out.appendChild(preview);
@@ -368,10 +491,103 @@
     preview.appendChild(renderDoc(T.make(prof, data, groups)));
     doc.body.classList.add('pg-tool');
   }
+  /* ---------------- /my-details/: see, change, back up and move the saved lists (Excel in and out) */
+  var MLISTS = [
+    { key: 'tk-mine', title: 'My details', one: 'business or person', cols: [['name', 'Business or your name', '', 'wide'], ['addr', 'Address', '', 'wide'], ['gstin', 'GSTIN', ''], ['state', 'State', ''],
+      ['phone', 'Phone', ''], ['email', 'Email', ''], ['pan', 'PAN', ''], ['bank', 'Bank name', ''], ['acct', 'Account number', ''], ['ifsc', 'IFSC', ''], ['upi', 'UPI ID', '']] },
+    { key: 'tk-parties', title: 'Customers and suppliers', one: 'customer or supplier', cols: [['name', 'Name', '', 'wide'], ['type', 'Type', ''], ['addr', 'Address', '', 'wide'], ['gstin', 'GSTIN', ''],
+      ['state', 'State', ''], ['phone', 'Phone', ''], ['email', 'Email', ''], ['pan', 'PAN', '']] },
+    { key: 'tk-items', title: 'Items and services', one: 'item', cols: [['name', 'Item or service', '', 'wide'], ['code', 'Item code', ''], ['hsn', 'HSN/SAC', ''], ['unit', 'Unit', ''],
+      ['rate', 'Rate', '', 'number'], ['gst', 'GST / tax %', '', 'number']] }];
+  function mountMasters(box) {
+    var root = h('div', { 'class': 'tk-ms' }), msg = h('p', { 'class': 'tk-msg', role: 'status', 'aria-live': 'polite' });
+    function memoKeys() { var a = []; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^tk-memo-/.test(k)) a.push(k); } } catch (e) {} return a; }
+    function draw() {
+      root.innerHTML = '';
+      MLISTS.forEach(function (L) {
+        var rows = M.list(L.key), q = h('input', { type: 'search', placeholder: 'Search ' + L.title.toLowerCase(), 'aria-label': 'Search ' + L.title.toLowerCase() }), shown = 30;
+        var listEl = h('div', { 'class': 'tk-lines' }), count = h('span', { 'class': 'muted' });
+        function paint() {
+          var t = q.value.trim().toLowerCase(), all = M.list(L.key), hit = all.filter(function (r) { return !t || JSON.stringify(r).toLowerCase().indexOf(t) >= 0; });
+          count.textContent = all.length ? ' (' + all.length + ')' : '';
+          listEl.innerHTML = '';
+          if (!hit.length) listEl.appendChild(h('p', { 'class': 'muted', text: all.length ? 'Nothing matches.' : 'Nothing saved yet. It fills up as you print or download from the online tools, or add one here.' }));
+          hit.slice(0, shown).forEach(function (r) {
+            var idx = all.indexOf(r), timer;
+            function save1(k, v) { r[k] = v; clearTimeout(timer); timer = setTimeout(function () { var a = M.list(L.key); a[idx] = r; store(L.key, a); }, 300); if (k === 'gstin') warn(); }
+            var w = h('small', { 'class': 'tk-warn' });
+            function warn() { w.textContent = r.gstin && !gstinCheck(r.gstin) ? '⚠ This GSTIN does not look right (15 characters, last one is a check digit).' : ''; }
+            warn();
+            listEl.appendChild(h('div', { 'class': 'tk-line' }, [
+              h('button', { type: 'button', 'class': 'tk-x', 'aria-label': 'Delete ' + (r.name || L.one), title: 'Delete', text: '×', onclick: function () {
+                if (!confirm('Delete "' + (r.name || L.one) + '"?')) return; var a = M.list(L.key); a.splice(idx, 1); store(L.key, a); paint(); } }),
+              h('div', { 'class': 'tk-row' }, L.cols.map(function (c) { return field(c, r[c[0]], save1); }).concat([w]))]));
+          });
+          if (hit.length > shown) listEl.appendChild(h('button', { type: 'button', 'class': 'btn btn-2', text: 'Show more (' + (hit.length - shown) + ')', onclick: function () { shown += 50; paint(); } }));
+        }
+        q.addEventListener('input', function () { shown = 30; paint(); });
+        root.appendChild(h('fieldset', {}, [h('legend', {}, [L.title, count]), q, listEl,
+          h('div', { 'class': 'tk-acts' }, [h('button', { type: 'button', 'class': 'btn btn-2', text: '+ Add ' + L.one, onclick: function () {
+            var a = M.list(L.key); a.unshift({ name: '', used: Date.now() }); store(L.key, a); q.value = ''; shown = 30; paint(); var f = listEl.querySelector('input'); if (f) f.focus(); } })])]));
+        paint();
+      });
+      var mk = memoKeys(), n = mk.reduce(function (s, k) { return s + M.list(k).length; }, 0);
+      if (n) root.appendChild(h('fieldset', {}, [h('legend', { text: 'Other remembered lines (' + n + ')' }),
+        h('p', { 'class': 'muted', text: 'Subjects, salary heads, expense types and similar lines you typed in the other tools.' }),
+        h('button', { type: 'button', 'class': 'btn btn-2', text: 'Forget these lines', onclick: function () { if (confirm('Forget all other remembered lines?')) { mk.forEach(function (k) { localStorage.removeItem(k); }); draw(); } } })]));
+    }
+    function dump() { var o = { app: 'toolkit.groupchaton.com', saved: new Date().toISOString(), lists: {} };
+      MLISTS.map(function (L) { return L.key; }).concat(memoKeys()).forEach(function (k) { o.lists[k] = M.list(k); }); return o; }
+    function merge(lists) { var n = 0; Object.keys(lists || {}).forEach(function (k) { if (!/^tk-(mine|parties|items|memo-)/.test(k) || !Array.isArray(lists[k])) return; lists[k].forEach(function (r) { if (r && r.name) { M.upsert(k, r); n++; } }); }); return n; }
+    var fileIn = h('input', { type: 'file', accept: '.json,.xlsx,application/json', hidden: true, onchange: function () {
+      var f = fileIn.files[0]; fileIn.value = ''; if (!f) return;
+      msg.textContent = 'Reading ' + f.name + '…';
+      if (/\.json$/i.test(f.name)) f.text().then(function (t) { var n = merge(JSON.parse(t).lists); draw(); msg.textContent = n + ' saved entries restored.'; }).catch(function () { msg.textContent = 'That file is not a Toolkit backup.'; });
+      else loadLib('xlsx').then(function (X) { return f.arrayBuffer().then(function (buf) { var wb = new X.Workbook(); return wb.xlsx.load(buf).then(function () { return wb; }); }); }).then(function (wb) {
+        var n = 0;
+        MLISTS.forEach(function (L) {
+          var ws = wb.getWorksheet(L.title) || (MLISTS.length && wb.worksheets.length === 1 && L.key === 'tk-parties' ? wb.worksheets[0] : null); if (!ws) return;
+          var head = [], map = {};
+          ws.getRow(1).eachCell(function (c, i) { head[i] = String(c.text || '').toLowerCase().trim(); });
+          L.cols.forEach(function (c) { head.forEach(function (t, i) { if (t && (t === c[1].toLowerCase() || t === c[0] || (c[0] === 'name' && /name|item|party|customer/.test(t) && !map.name))) map[c[0]] = map[c[0]] || i; }); });
+          if (!map.name) return;
+          ws.eachRow(function (row, r) { if (r === 1) return; var o = {}; Object.keys(map).forEach(function (k) { var v = row.getCell(map[k]).text; if (v != null && String(v).trim()) o[k] = String(v).trim(); }); if (o.name) { M.upsert(L.key, o); n++; } });
+        });
+        draw(); msg.textContent = n ? n + ' rows added from ' + f.name + '.' : 'No rows found. Use sheets named "Customers and suppliers" or "Items and services" with a Name column (download the Excel file first to see the layout).';
+      }, function (e) { msg.textContent = (e && e.message) || 'Could not read that Excel file.'; });
+    } });
+    box.innerHTML = '';
+    box.appendChild(h('div', { 'class': 'tk-acts' }, [
+      h('button', { type: 'button', 'class': 'btn', text: '⬇ Download backup', onclick: function () { save(new Blob([JSON.stringify(dump(), null, 1)], { type: 'application/json' }), 'Toolkit-saved-details-' + today() + '.json'); msg.textContent = 'Backup saved. Keep it safe; "Restore" brings it back on any device.'; } }),
+      h('button', { type: 'button', 'class': 'btn btn-2', text: '⬆ Restore or import', onclick: function () { fileIn.click(); } }),
+      h('button', { type: 'button', 'class': 'btn btn-2', text: '📗 Excel file', onclick: function (e) {
+        var b = e.currentTarget; b.disabled = true; msg.textContent = 'Making the Excel file…';
+        loadLib('xlsx').then(function (X) {
+          var wb = new X.Workbook(); wb.creator = 'Nivesh Sahayak'; wb.company = 'Nivesh Sahayak';
+          MLISTS.forEach(function (L) { var ws = wb.addWorksheet(L.title); ws.columns = L.cols.map(function (c) { return { header: c[1], key: c[0], width: c[3] === 'wide' ? 36 : 16 }; });
+            ws.getRow(1).font = { bold: true }; M.list(L.key).forEach(function (r) { var o = {}; L.cols.forEach(function (c) { o[c[0]] = r[c[0]] == null ? '' : r[c[0]]; }); ws.addRow(o); }); });
+          return wb.xlsx.writeBuffer();
+        }).then(function (buf) { save(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'Toolkit-saved-details-' + today() + '.xlsx'); msg.textContent = 'Excel file ready. Add rows in Excel and use "Restore or import" to bring them in.'; },
+          function (er) { msg.textContent = er.message; }).then(function () { b.disabled = false; });
+      } }),
+      h('button', { type: 'button', 'class': 'btn btn-2', text: 'Delete everything', onclick: function () {
+        if (!confirm('Delete all saved details, customers, suppliers and items from this device? Download a backup first if you may need them.')) return;
+        MLISTS.forEach(function (L) { localStorage.removeItem(L.key); }); memoKeys().forEach(function (k) { localStorage.removeItem(k); }); draw(); msg.textContent = 'Everything was deleted from this device.'; } }),
+      fileIn]));
+    box.appendChild(msg); box.appendChild(root);
+    draw();
+  }
+
   /* tools in their own files (assets/tools/<id>.js, loaded after this one) call TKTools.register(id, definition) with the same
      shape as TOOLS above; lib gives them the helpers. Mounting waits for DOMContentLoaded, which comes after every deferred script. */
   window.TKTools = { words: words, tools: TOOLS, CREDIT: CREDIT, MADE: MADE, register: function (id, def) { TOOLS[id] = def; },
+    masters: M, gstinCheck: gstinCheck, stateOf: stateOf,
+    suggest: function (inp, key, listFn, onPick) {   // a datalist of saved values on any input; onPick(value) when one is chosen
+      inp.setAttribute('autocomplete', 'off');
+      inp.addEventListener('focus', function () { inp.setAttribute('list', datalist(key, listFn())); });
+      if (onPick) inp.addEventListener('input', function (e) { if (!e.inputType || e.inputType === 'insertReplacementText') onPick(inp.value); });
+    },
     lib: { h: h, num: num, r2: r2, money: money, today: today, dmy: dmy, monthName: monthName, words: words, nextNo: nextNo, gradeOf: gradeOf, store: store, STATES: STATES, GST: GST } };
-  function mountAll() { Array.prototype.forEach.call(doc.querySelectorAll('.tk-tool[data-tool]'), mount); }
+  function mountAll() { Array.prototype.forEach.call(doc.querySelectorAll('.tk-tool[data-tool]'), mount); Array.prototype.forEach.call(doc.querySelectorAll('[data-masters]'), mountMasters); }
   if (doc.readyState === 'complete') mountAll(); else doc.addEventListener('DOMContentLoaded', mountAll);
 })();
