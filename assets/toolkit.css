@@ -15,7 +15,7 @@ h1,h2,h3{font-family:var(--head);line-height:1.25;letter-spacing:-.01em}
 h1{font-size:clamp(1.65rem,1.2rem + 2vw,2.5rem);margin:.4em 0 .35em}
 h2{font-size:clamp(1.2rem,1.05rem + .8vw,1.5rem);margin:1.8em 0 .55em}
 h3{font-size:1.1rem;margin:1.2em 0 .4em}
-.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 16px}
+.wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 clamp(16px,3vw,40px)}   /* owner: use the screen; text blocks keep a reading width below */
 main.wrap{flex:1;padding-bottom:48px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .skip{position:absolute;left:-999px;top:8px;background:var(--brand);color:var(--on-brand);padding:8px 12px;border-radius:8px;z-index:100}
@@ -97,7 +97,8 @@ html[data-theme=dark] .eyebrow{color:var(--brand)}
 .kit-item h3 a{text-decoration:none;color:var(--ink)}
 .kit-item p{color:var(--muted)}
 .go{font-weight:700}
-.item{max-width:900px}
+.item{max-width:none}
+.item-hd,.item>p,.item>ul,.item>ol,.item>h2,.item>h3,.item>.faq,.item>.note,.item>.who,.item>.prose{max-width:920px}
 .item-hd{margin-top:12px}
 .dl-box{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin:18px 0}
 .dl-btns{display:flex;flex-wrap:wrap;gap:10px}
@@ -167,6 +168,7 @@ html[data-theme=dark] .promo-cta{color:var(--brand)}
 /* online tools */
 .tk-tool{margin:18px 0}
 .tk-app{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:start}
+@media (min-width:1200px){.tk-app{grid-template-columns:minmax(400px,560px) minmax(0,1fr);gap:24px}}
 @media (max-width:960px){.tk-app{grid-template-columns:minmax(0,1fr)}}
 .tk-form{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
 .tk-form fieldset{border:0;padding:0;margin:0 0 14px}
