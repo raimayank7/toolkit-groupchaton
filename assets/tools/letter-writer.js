@@ -946,7 +946,7 @@
     '.lw-paper{font:14px/1.55 Calibri,Carlito,"Segoe UI",Arial,sans-serif;color:#14213D;overflow-wrap:anywhere}.lw-paper.hi{font-family:"Nirmala UI",Mangal,"Noto Sans Devanagari","Segoe UI",sans-serif}' +
     '.lw-paper p{margin:0 0 12px;white-space:pre-line}.lw-paper .sig{margin-top:4px}.lw-paper .big{font-size:20px;color:#1D4ED8;margin:0 0 2px}.lw-paper .sm{font-size:12.5px}' +
     '.lw-paper .rule{border-bottom:2px solid #2563EB;padding-bottom:8px;margin-bottom:16px}.lw-paper mark{background:#FEF08A;color:inherit;border-radius:3px;padding:0 2px}' +
-    '.lw-made{color:#94A3B8;font-size:11px;text-align:center;margin:18px 0 0}' +
+    '.lw-made{color:#64748B;font-size:11px;text-align:center;margin:18px 0 0}' +
     '.tk-doc.lw-doc{padding:clamp(18px,5vw,48px) clamp(16px,5vw,56px);font-size:14px}' +
     '@media print{.lw-banner,.lw-edit{display:none!important}.lw-paper{font-size:11.5pt}.lw-paper mark{background:none;padding:0}.tk-doc.lw-doc{padding:0}}';
 
@@ -974,7 +974,7 @@
         wrap.appendChild(p);
       });
       paper.appendChild(wrap);
-      paper.appendChild(h('p', { 'class': 'no-print lw-made', text: MADE + ' · ' + CREDIT }));   /* on screen only: the credit is never printed or put in the letter */
+      paper.appendChild(h('p', { 'class': 'no-print lw-made', text: MADE }));
       banner.hidden = !m.edited;
       var miss = (toText(m).match(/\[[^\[\]\n]{1,60}\]/g) || []).length;
       msg.textContent = miss ? miss + ' detail' + (miss === 1 ? '' : 's') + ' still to fill (highlighted in yellow).' : 'Letter ready: ' + t.n + '.';

@@ -1390,7 +1390,7 @@
       var nb = h('div', { 'class': 'ct-notes' }, [h('h3', { text: 'Before you sign (remove this page from the final copy)' })]);
       var ul = h('ul'); M.notes.forEach(function (s, i) { ul.appendChild(h('li', { 'class': i ? null : 'ct-first', text: s })); }); nb.appendChild(ul); el.appendChild(nb);
     }
-    el.appendChild(h('p', { 'class': 'foot', contenteditable: 'false' }, [CREDIT, h('span', { 'class': 'foot-credit', text: ' · ' + NS })]));
+    el.appendChild(h('p', { 'class': 'foot', contenteditable: 'false' }, [CREDIT]));
     return el;
   }
 

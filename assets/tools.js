@@ -220,7 +220,7 @@
     if (m.words) el.appendChild(h('p', { 'class': 'words', text: m.words }));
     m.notes.forEach(function (n) { el.appendChild(h('p', { 'class': 'sub', style: 'text-align:left', text: n })); });
     el.appendChild(h('div', { 'class': 'sign' }, m.sign.map(function (s) { return h('div', { style: 'white-space:pre-line' }, ['\n\n' + (s ? '____________________\n' + s.split('\n').pop() : '')]); })));
-    el.appendChild(h('p', { 'class': 'foot' }, [MADE, h('span', { 'class': 'foot-credit', text: ' · ' + CREDIT })]));
+    el.appendChild(h('p', { 'class': 'foot' }, [MADE]));   /* owner: just the site address under every form, on screen and in print */
     return el;
   }
 

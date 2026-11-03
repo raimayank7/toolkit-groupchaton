@@ -10,7 +10,7 @@ html{-webkit-text-size-adjust:100%;scroll-padding-top:80px}
 body{background:var(--bg);color:var(--ink);font:16px/1.65 'Plus Jakarta Sans',system-ui,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 img,svg{max-width:100%}
 a{color:var(--brand-ink)}
-html[data-theme=dark] a{color:var(--brand)}
+:where(html[data-theme=dark]) a{color:var(--brand)}   /* low weight on purpose: .btn and other classed links keep their own colour (a.btn text was invisible in dark mode) */
 h1,h2,h3{font-family:var(--head);line-height:1.25;letter-spacing:-.01em}
 h1{font-size:clamp(1.65rem,1.2rem + 2vw,2.5rem);margin:.4em 0 .35em}
 h2{font-size:clamp(1.2rem,1.05rem + .8vw,1.5rem);margin:1.8em 0 .55em}
@@ -127,7 +127,7 @@ html[data-theme=dark] .eyebrow{color:var(--brand)}
 .doc p{margin:.25em 0}.doc .big{font-size:1.25em;color:#2563EB}.doc .b{font-weight:700}
 .doc table{border-collapse:collapse;width:100%;margin:8px 0;font-size:12.5px}
 .doc td{border:1px solid #CBD5E1;padding:4px 6px}.doc tr.h td{background:#2563EB;color:#fff;font-weight:700}
-.doc .more{color:#94A3B8;text-align:center}
+.doc .more{color:#64748B;text-align:center}
 
 /* ads and sponsor cards */
 .ad-slot{margin:26px 0;min-height:0}
@@ -196,7 +196,7 @@ html[data-theme=dark] .tk-form legend{color:var(--brand)}
 .tk-doc .gt td{font-weight:800;font-size:14px;border-top:2px solid #14213D;padding-top:4px}
 .tk-doc .words{font-weight:700;margin:8px 0}
 .tk-doc .sign{display:flex;justify-content:space-between;gap:16px;margin-top:40px;font-size:11.5px}
-.tk-doc .foot{color:#94A3B8;font-size:10px;text-align:center;margin-top:18px}
+.tk-doc .foot{color:#64748B;font-size:10px;text-align:center;margin-top:18px}
 .tk-doc .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:520px){.tk-doc .grid2{grid-template-columns:1fr}}
 
