@@ -103,7 +103,7 @@ def page(path, title, desc, main, *, ld=None, ads=True, noindex=False, crumbs=No
 <a class='skip' href='#main'>Skip to content</a>
 <header class='hdr'>
   <div class='wrap hdr-in'>
-    <a class='brand' href='/' aria-label='{NAME}: home'><img class='logo-l' src='/brand/logo-light.png' width='218' height='50' alt='GroupChatOn'><img class='logo-d' src='/brand/logo-dark.png' width='218' height='50' alt='GroupChatOn'><span class='brand-t'>Toolkit</span></a>
+    <a class='brand' href='/' aria-label='{NAME}: home'><img class='logo-l' src='/brand/logo-light.png' width='218' height='50' alt='GroupChatOn'><img class='logo-d' src='/brand/logo-dark.png' width='218' height='50' alt='GroupChatOn'><img class='logo-m' src='/brand/mark.svg' width='32' height='32' alt=''><span class='brand-t'>Toolkit</span></a>
     <nav class='nav' id='nav' aria-label='Toolkits'>{NAV}</nav>
     <div class='hdr-act'>
       <a class='ibtn' href='/search/' aria-label='Search' title='Search (/)'><svg viewBox='0 0 24 24' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg></a>

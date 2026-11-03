@@ -47,8 +47,12 @@ html[data-theme=dark] .nav a:hover{color:var(--brand)}
  .nav.open{max-height:calc(100vh - 80px);overflow:auto}
  .hdr-act{margin-left:auto}
 }
-@media (max-width:400px){.brand img{height:30px}.brand-t{font-size:.85rem;padding:2px 6px}.ibtn{width:36px;height:36px}.hdr-act{gap:2px}}
-@media (max-width:340px){.brand img{display:none!important}}
+.logo-m{display:none!important;height:32px!important;width:32px!important}
+/* phones: 44px header buttons; the wordmark gets smaller, then gives way to the bubble mark so "Toolkit" is never covered */
+@media (max-width:480px){.hdr-in{gap:8px}.hdr-act{gap:2px}.brand{gap:6px;min-height:44px}.brand img{height:26px}.brand-t{font-size:.9rem;padding:2px 7px}}
+@media (max-width:374px){:root .brand .logo-l,:root .brand .logo-d{display:none!important}.brand .logo-m{display:block!important}}
+@media (max-width:340px){.hdr-in{gap:4px}.brand{gap:4px}.brand-t{font-size:.85rem;padding:2px 5px}}
+@media (max-width:420px){.hdr-in:has([data-install]:not([hidden])) .logo-l,.hdr-in:has([data-install]:not([hidden])) .logo-d{display:none!important}.hdr-in:has([data-install]:not([hidden])) .logo-m{display:block!important}}
 
 /* buttons, cards */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--brand);color:var(--on-brand);font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
@@ -225,6 +229,19 @@ html[data-theme=dark] .tk-form legend{color:var(--brand)}
 .tk-ms input[type=search]{width:100%;min-height:44px;margin:4px 0 10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
 [data-masters]>.tk-acts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
 @media print{.tk-saved{display:none!important}}
+.tk-ms fieldset{min-width:0;border:1px solid var(--line);border-radius:16px;padding:10px 14px 14px;background:var(--card)}
+
+/* phones and small tablets: 44px tap targets, 16px form text (iPhone Safari zooms into smaller fields) */
+@media (max-width:960px){
+ .ibtn{width:44px;height:44px}.brand{min-height:44px}
+ .tk-f input,.tk-f select,.tk-f textarea,.contact input,.contact select,.contact textarea,.tk-ms input[type=search],.ct-search,.hero-search input{font-size:16px}
+ .tk-line{padding-top:48px}
+ .tk-x{width:44px;height:44px;top:2px;right:2px;border-radius:10px}
+ .crumbs{margin-top:4px}.crumbs a{display:inline-block;padding:12px 2px}
+ .kit-item h3 a,.kit-item .go{display:inline-block;padding:11px 0}
+ .ftr-nav{gap:0}.ftr-nav b{margin-bottom:4px}.ftr-nav a{padding:12px 0;line-height:1.35}
+}
+@media (max-width:520px){.tk-doc .sign{flex-wrap:wrap}.tk-doc{font-size:12px}.tk-doc table{font-size:11.5px}.tk-doc td,.tk-doc th{padding:3px 4px}.tk-doc .tot{min-width:0}}   /* phone previews: more columns fit before the box has to scroll (print keeps A4 sizes) */
 
 /* tablets, laptops, desktops (device test 2026-11-03) */
 @media (min-width:600px){
