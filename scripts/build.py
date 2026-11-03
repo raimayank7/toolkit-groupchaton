@@ -388,7 +388,7 @@ def static_pages():
     P['contact'] = ('Contact Toolkit by GroupChatOn', 'Ask for a template, report a mistake in a file or send feedback to Toolkit by GroupChatOn.', 'ContactPage', f"""
 <h1>Contact us</h1>
 <p class='lead'>Found a mistake in a formula, need a template for your work, or have feedback? Messages for every GroupChatOn site go through one contact form on our main site.</p>
-<p><a class='btn' href='https://www.groupchaton.com/p/contact-us.html'>Open the contact form</a></p>
+<p><a class='btn' href='https://www.groupchaton.com/p/contact-us.html?from=toolkit'>Open the contact form</a></p>
 <h2>Help us answer faster</h2>
 <ul><li><b>Start with "Toolkit"</b> so we know which site it is about.</li><li><b>The file or tool name</b>, for example "GST Invoice Register".</li><li><b>What went wrong</b>, or what the template you need should do.</li><li><b>Your email</b>, so we can reply.</li></ul>
 <p>We usually reply within a few days.</p>""")
