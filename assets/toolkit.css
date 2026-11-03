@@ -225,3 +225,32 @@ html[data-theme=dark] .tk-form legend{color:var(--brand)}
 .tk-ms input[type=search]{width:100%;min-height:44px;margin:4px 0 10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
 [data-masters]>.tk-acts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
 @media print{.tk-saved{display:none!important}}
+
+/* tablets, laptops, desktops (device test 2026-11-03) */
+@media (min-width:600px){
+ /* form rows wrap like text: a field before a full-width one (Shop name, Discount, Qty/Rate) fills its row instead of sitting in one narrow column */
+ .tk-form .tk-row{display:flex;flex-wrap:wrap}
+ .tk-form .tk-row>*{flex:1 1 150px}
+ .tk-form .tk-line .tk-row>*{flex-basis:96px}
+ .tk-form .tk-row>.wide,.tk-form .tk-row>:not(.tk-f):not(.tk-chk){flex-basis:100%}
+}
+@media (min-width:768px){
+ .ftr-base{border-top:0;padding-top:0}
+ .ftr-base::before{content:'';display:block;border-top:1px solid var(--line);margin-bottom:12px}   /* line lines up with the footer text, not the page gutters */
+ .who{max-width:calc(75ch * 1.08)}   /* same right edge as the .lead paragraphs above it */
+ .pg-search .hero-search{margin-left:0}   /* search box under the left-aligned heading */
+ .item>.promo-slot{max-width:920px}
+}
+/* tablet landscape (961-1100): side-by-side left the bill preview ~490px wide and GST tables scrolled → form, then preview */
+@media (min-width:961px) and (max-width:1100px){.tk-app{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:1101px) and (max-width:1199px){.tk-app{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}}
+@media (min-width:1100px){
+ .kit-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}   /* kit pages: two columns, not 180-character lines */
+ .kit-items .kit-item{margin:6px 0}
+}
+/* print: the page's gutters and 48px bottom padding pushed the last line of tall documents (home budget, estimate) onto a 2nd sheet */
+@media print{.pg-tool main.wrap{padding:0}.pg-tool .tk-tool{margin:0}}
+/* wide spreadsheet previews may use the empty space beside the 1440px page instead of scrolling */
+@media (min-width:1500px){
+ .item .xl{position:relative;left:50%;transform:translateX(-50%);width:max-content;min-width:100%;max-width:calc(100vw - 80px)}
+}

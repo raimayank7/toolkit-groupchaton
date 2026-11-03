@@ -322,7 +322,7 @@ def kit_page(k):
 <div class='grid'>{''.join(card(t) for t in items)}</div>
 {ad('inArticle')}
 <h2>What each one does</h2>
-{blocks}
+<div class='kit-items'>{blocks}</div>
 {promo()}
 <h2>Good to know</h2>
 <ul class='tips'><li>Every template is free and contains no macros, so it opens without security warnings.</li>
