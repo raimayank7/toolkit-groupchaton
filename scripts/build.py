@@ -32,6 +32,14 @@ KIND = {'excel': ('Excel template', 'xlsx'), 'word': ('Word template', 'docx'), 
 
 # ------------------------------------------------------------------ page shell
 NAV = ''.join("<a href='/%s/'>%s</a>" % (k['id'], esc(k['name'])) for k in TOOLKITS)
+# footer: the toolkits in three short groups instead of one long column (owner: "footer should be organised")
+FOOT_GROUPS = [('Accounts & business', ['accounting-gst', 'shop', 'sales', 'purchase', 'restaurant', 'rentals']),
+               ('Work & services', ['construction', 'clinic', 'events', 'freelancers', 'projects', 'teachers']),
+               ('Office & personal', ['office-hr', 'general-office', 'letters', 'contracts', 'home-money'])]
+_left = [k['id'] for k in TOOLKITS if not any(k['id'] in g for _, g in FOOT_GROUPS)]
+if _left: FOOT_GROUPS[-1][1].extend(_left)   # a new toolkit lands in the last group until it is placed
+FOOT_KITS = ''.join("<nav class='ftr-nav' aria-label='%s'><b>%s</b>%s</nav>" % (esc(t), esc(t), ''.join("<a href='/%s/'>%s</a>" % (i, esc(KIT[i]['name'])) for i in ids if i in KIT))
+                    for t, ids in FOOT_GROUPS)
 CRIT = """html{background:#F6F8FC;color:#14213D;color-scheme:light}html[data-theme=dark]{background:#0B1220;color:#E7ECF7;color-scheme:dark}
 body{margin:0;font-family:'Plus Jakarta Sans',system-ui,'Segoe UI',Roboto,Arial,sans-serif;overflow-x:hidden}
 .tk-load{position:fixed;inset:0 0 auto 0;height:3px;z-index:99;background:linear-gradient(90deg,transparent,#2563EB,#60A5FA,transparent);background-size:50% 100%;background-repeat:no-repeat;animation:tkbar 1s linear infinite}
@@ -112,7 +120,7 @@ def page(path, title, desc, main, *, ld=None, ads=True, noindex=False, crumbs=No
 <footer class='ftr'>
   <div class='wrap ftr-in'>
     <div class='ftr-brand'><img src='/brand/mark.svg' width='40' height='40' alt=''><div><b>{NAME}</b><br><span>{TAG}. Free, private, works offline.</span></div></div>
-    <nav class='ftr-nav' aria-label='Toolkits'><b>Toolkits</b>{NAV}</nav>
+    {FOOT_KITS}
     <nav class='ftr-nav' aria-label='Site'><b>Site</b><a href='/p/about.html'>About</a><a href='/p/contact.html'>Contact</a><a href='/p/privacy-policy.html'>Privacy policy</a><a href='/p/disclaimer.html'>Disclaimer</a><a href='/p/terms-of-use.html'>Terms of use</a><a href='/search/'>Search</a></nav>
     <nav class='ftr-nav' aria-label='GroupChatOn'><b>GroupChatOn</b><a href='https://infinity.groupchaton.com/'>Infinity free tools ↗</a><a href='https://www.groupchaton.com/'>Novels ↗</a><a href='https://share.groupchaton.com/'>Share ↗</a><a href='https://help.groupchaton.com/'>Help ↗</a></nav>
   </div>
