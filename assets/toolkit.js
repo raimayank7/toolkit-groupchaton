@@ -64,7 +64,7 @@
         'data-ad-format': fluid ? 'fluid' : 'auto', 'data-ad-layout': fluid ? 'in-article' : null, 'data-full-width-responsive': fluid ? null : 'true' });
       s.appendChild(h('span', { 'class': 'ad-label', text: 'Advertisement' })); s.appendChild(ins); s.classList.add('on');
       try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-      setTimeout(function () { if (ins.getAttribute('data-ad-status') === 'unfilled' || !ins.querySelector('iframe')) { s.innerHTML = ''; s.classList.remove('on'); } }, 9000);
+      setTimeout(function () { if (ins.getAttribute('data-ad-status') !== 'filled') { s.innerHTML = ''; s.classList.remove('on'); } /* 'unfilled', 'unfill-optimized' or blocked */ }, 9000);
     });
   } else { window.adsbygoogle = window.adsbygoogle || []; window.adsbygoogle.pauseAdRequests = 1; }
 
