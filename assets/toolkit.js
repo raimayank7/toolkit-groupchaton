@@ -68,8 +68,8 @@
     });
   } else { window.adsbygoogle = window.adsbygoogle || []; window.adsbygoogle.pauseAdRequests = 1; }
 
-  /* sponsor + sister-site cards (shared list on share.groupchaton.com), at most 2 per page */
-  var slots = $$('.promo-slot');
+  /* sponsor + sister-site cards (shared list on share.groupchaton.com): home page 3 (owner), other pages at most 2, always below the tool */
+  var slots = $$('.promo-slot'), MAX_PROMOS = body.classList.contains('pg-home') ? 3 : 2;
   function inIndia() { try { var z = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; return z === 'Asia/Kolkata' || z === 'Asia/Calcutta'; } catch (e) { return false; } }
   function pick(list) {
     var india = inIndia(), pool = [KOFI];
@@ -92,7 +92,7 @@
   }
   function fill(list) {
     var pool = pick(list || []);
-    slots.slice(0, 2).forEach(function (s, i) { var p = pool[i]; if (!p) return; s.innerHTML = ''; promoCard(p).forEach(function (n) { s.appendChild(n); }); });
+    slots.slice(0, MAX_PROMOS).forEach(function (s, i) { var p = pool[i]; if (!p) return; s.innerHTML = ''; promoCard(p).forEach(function (n) { s.appendChild(n); }); });
   }
   if (slots.length && !NO_ADS) {
     var cached = store('tk-promos');

@@ -356,6 +356,7 @@ def home():
 </section>
 <h2 class='sec-h'>Choose your toolkit</h2>
 <div class='kgrid'>{''.join(kit_card(k) for k in TOOLKITS)}</div>
+{promo()}
 <h2 class='sec-h'>Online tools: fill, print, download</h2>
 <p class='muted'>No download needed. Fill a form and get a print-ready document, a PDF, or a real Excel or Word file.</p>
 <div class='grid'>{''.join(card(t) for t in online)}</div>
@@ -368,6 +369,7 @@ def home():
 <div><b>Formulas you can trust</b><p>Every workbook is opened and recalculated in real Excel before it is published, with sample data you can check by hand.</p></div>
 <div><b>Your data stays yours</b><p>No accounts, no uploads. Files live on your computer; online tools save only in your browser.</p></div>
 <div><b>Simple by design</b><p>Yellow cells to type, grey cells that calculate, and a "How to use" sheet inside every file.</p></div></div></section>
+{promo()}
 <h2 class='sec-h'>Questions and answers</h2>
 {faq_html(HOME_FAQ)}
 {ad('end')}"""
