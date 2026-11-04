@@ -2,6 +2,8 @@
 (function () {
   'use strict';
   var doc = document, root = doc.documentElement, body = doc.body;
+  /* Chrome/Edge 131+ print the @page footer (site name) instead of their own date/title/URL lines */
+  (function () { var m = /Chrome\/(\d+)/.exec(navigator.userAgent); if (m && +m[1] >= 131) root.classList.add('tk-pmb'); })();
   var NO_ADS = body.getAttribute('data-ads') === '0';
   var AD_CLIENT = 'ca-pub-5935207738848708';
   var AD_SLOTS = { inArticle: '2020003182', end: '2358914532', home: '3496736383' };

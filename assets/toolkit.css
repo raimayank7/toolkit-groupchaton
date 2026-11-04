@@ -216,7 +216,9 @@ html[data-theme=dark] .tk-form legend{color:var(--brand)}
  .pg-tool .tk-app{display:block}.pg-tool .tk-out{position:static}
  .pg-tool .tk-doc{border:0;box-shadow:none;padding:0}
  .foot-credit,.no-print{display:none!important}   /* owner: the credit is never printed */
- @page{size:A4;margin:12mm}
+ /* owner: no browser date/title/URL/page number; only the site name, bottom centre of every page */
+ @page{size:A4;margin:12mm 12mm 14mm;@top-left{content:""}@top-center{content:""}@top-right{content:""}@bottom-left{content:""}@bottom-center{content:"toolkit.groupchaton.com";font:8pt Arial,sans-serif;color:#64748B}@bottom-right{content:""}}
+ html.tk-pmb .tk-doc .foot{display:none!important}   /* page footer above already says it */
 }
 
 @media (min-width:760px){.nav.open{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:12px max(16px,calc((100% - 1180px)/2)) 16px}}
