@@ -88,7 +88,7 @@
       : h('span', { 'class': 'promo-ic', 'aria-hidden': 'true', text: p.icon === 'coffee' ? '☕' : (p.icon || '★') });
     var a = h('a', { 'class': 'promo', href: p.href, target: '_blank', rel: own ? 'noopener' : 'sponsored noopener' }, [pic,
       h('span', { 'class': 'promo-b' }, [h('b', { text: p.title }), h('span', { text: p.line }), p.small ? h('small', { text: p.small }) : null, h('span', { 'class': 'promo-cta', text: (p.cta || 'Open') + ' →' })])]);
-    return [h('span', { 'class': 'promo-label', text: own ? 'From GroupChatOn' : 'Sponsored' }), a];
+    return [h('span', { 'class': 'promo-label', text: p.tag || (own ? 'From GroupChatOn' : 'Sponsored') }), a];
   }
   function fill(list) {
     var pool = pick(list || []);
