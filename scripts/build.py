@@ -122,7 +122,7 @@ def page(path, title, desc, main, *, ld=None, ads=True, noindex=False, crumbs=No
     <div class='ftr-brand'><img src='/brand/mark.svg' width='40' height='40' alt=''><div><b>{NAME}</b><br><span>{TAG}. Free, private, works offline.</span></div></div>
     {FOOT_KITS}
     <nav class='ftr-nav' aria-label='Site'><b>Site</b><a href='/p/about.html'>About</a><a href='/p/contact.html'>Contact</a><a href='/my-details/'>My saved details</a><a href='/p/privacy-policy.html'>Privacy policy</a><a href='/p/disclaimer.html'>Disclaimer</a><a href='/p/terms-of-use.html'>Terms of use</a><a href='/search/'>Search</a></nav>
-    <nav class='ftr-nav' aria-label='GroupChatOn'><b>GroupChatOn</b><a href='https://infinity.groupchaton.com/'>Infinity free tools ↗</a><a href='https://www.groupchaton.com/'>Novels ↗</a><a href='https://share.groupchaton.com/'>Share ↗</a><a href='https://help.groupchaton.com/'>Help ↗</a></nav>
+    <nav class='ftr-nav' aria-label='GroupChatOn'><b>GroupChatOn</b><a href='https://infinity.groupchaton.com/'>Infinity free tools ↗</a><a href='https://novel.groupchaton.com/'>Novels ↗</a><a href='https://share.groupchaton.com/'>Share ↗</a><a href='https://help.groupchaton.com/'>Help ↗</a></nav>
   </div>
   <div class='wrap ftr-base'>
     <p>© {YEAR} GroupChatOn. All rights reserved. Microsoft, Excel and Word are trademarks of Microsoft Corporation; this site is not affiliated with Microsoft.</p>
@@ -392,7 +392,7 @@ def static_pages():
 <h2>How the files are made</h2>
 <p>Each workbook is built with ordinary formulas (no macros), opened and recalculated in Microsoft Excel, and checked for errors before it goes live. Sample data in every file lets you check the arithmetic by hand. Every file has a "How to use" sheet or clear [bracketed] blanks.</p>
 <h2>Part of GroupChatOn</h2>
-<p>Toolkit is a sister site of <a href='https://infinity.groupchaton.com/'>Infinity</a> (609 free browser tools), the <a href='https://www.groupchaton.com/'>GroupChatOn novels</a> site and <a href='https://share.groupchaton.com/'>Share</a>. The sites are free to use and supported by advertising.</p>
+<p>Toolkit is a sister site of <a href='https://infinity.groupchaton.com/'>Infinity</a> (609 free browser tools), the <a href='https://novel.groupchaton.com/'>GroupChatOn novels</a> site and <a href='https://share.groupchaton.com/'>Share</a>. The sites are free to use and supported by advertising.</p>
 <h2>Coming next</h2>
 <p>More templates for every toolkit, an Excel add-in with a Toolkit ribbon tab, and a side panel inside Excel and Word. Ideas are welcome on the <a href='/p/contact.html'>contact page</a>.</p>""")
     P['contact'] = ('Contact Toolkit by GroupChatOn', 'Ask for a template, report a mistake in a file or send feedback to Toolkit by GroupChatOn.', 'ContactPage', f"""
