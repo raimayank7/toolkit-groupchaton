@@ -490,6 +490,22 @@
     spot.appendChild(h('div', { 'class': 'tk-app' }, [form, out]));
     preview.appendChild(renderDoc(T.make(prof, data, groups)));
     doc.body.classList.add('pg-tool');
+    dock(form, out);
+  }
+  /* phones: a bar at thumb height while filling the form (Preview, Print / PDF, Excel, Word). It presses the real buttons
+     above the preview and hides itself while those are on screen, so nothing is shown twice. Hidden above 600 px by CSS. */
+  function dock(form, out) {
+    if (doc.querySelector('.tk-dock')) return;
+    var acts = out.querySelector('.tk-out-acts'); if (!acts) return;
+    var real = acts.querySelectorAll('button');
+    var bar = h('div', { 'class': 'tk-dock no-print', role: 'toolbar', 'aria-label': 'Document actions' }, [
+      h('button', { type: 'button', 'class': 'btn btn-2', onclick: function () { out.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, [h('span', { 'aria-hidden': 'true', text: '👁' }), ' Preview']),
+      h('button', { type: 'button', 'class': 'btn', onclick: function () { real[0].click(); } }, [h('span', { 'aria-hidden': 'true', text: '🖨' }), ' Print / PDF'])].concat(
+      Array.prototype.slice.call(real, 1).map(function (r) { return h('button', { type: 'button', 'class': 'btn btn-2 tk-dock-x', 'aria-label': r.textContent.trim(), onclick: function () { r.click(); } }, [h('span', { 'aria-hidden': 'true', text: (r.textContent.trim().match(/^\S+/) || [''])[0] }), h('small', { 'aria-hidden': 'true', text: r.textContent.trim().replace(/^\S+\s*/, '') })]); })));
+    doc.body.appendChild(bar);
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.target === acts) bar.classList.toggle('is-off', e.isIntersecting || e.boundingClientRect.top < 0); });
+    }).observe(acts);
   }
   /* ---------------- /my-details/: see, change, back up and move the saved lists (Excel in and out) */
   var MLISTS = [
