@@ -293,6 +293,7 @@ html[data-theme=dark] .tk-form legend{color:var(--brand)}
  .skip{min-height:44px;display:inline-flex;align-items:center}
  .crumbs a{padding:12px 6px;margin:0 -6px}
  input[type=checkbox],input[type=radio]{flex:none;min-width:20px;min-height:20px}
+ a.ns-credit{display:inline-flex;align-items:center;min-height:44px}
  .google-auto-placed{max-width:100%;overflow:hidden}.google-auto-placed>ins.adsbygoogle{width:100%!important}
 }
 @media print{.tk-dock{display:none!important}}
